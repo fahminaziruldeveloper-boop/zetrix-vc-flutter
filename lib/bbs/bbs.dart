@@ -162,7 +162,7 @@ class Bbs {
   ///
   /// This function utilizes FFI calls to interact with the native BBS+ library to generate a cryptographic proof.
   /// Given the BLS public key, the function first converts it to a BBS public key before beginning the proof creation process.
-  Future<Uint8List> blsCreateProofMC({
+  Future<Uint8List> blsCreateProof({
     required Uint8List blsPublicKey,
     required Uint8List nonce,
     required Uint8List signature,
@@ -339,7 +339,7 @@ class Bbs {
   /// This function enables selective disclosure by allowing specific messages to be "revealed" in the proof
   /// while keeping the rest "hidden." It prepares messages as `ProofMessage` objects marked as revealed or hidden,
   /// generates the proof using `BbsFlutter.blsCreateProof`, and returns a Base64 URL-encoded proof string.
-  Future<String> createSelectiveDisclosureProofBlsMC(
+  Future<String> createSelectiveDisclosureProofBls(
     Uint8List publicKey,
     Uint8List nonce,
     Uint8List signature,
@@ -472,7 +472,7 @@ class Bbs {
   /// Similar to [setBbsBlsProofFFI], this function creates cryptographic proofs using a BBS+ signature
   /// and public key. Messages specified in the `revealIndex` list are publicly revealed in the proof,
   /// while others remain hidden. A random nonce is generated to ensure uniqueness.
-  Future<Proof> setBbsBlsProofMC(
+  Future<Proof> setBbsBlsProof(
     List<Uint8List> messages,
     Uint8List publicKey,
     String bbsSignature,
@@ -489,7 +489,7 @@ class Bbs {
 
     String proofValue;
     try {
-      proofValue = await createSelectiveDisclosureProofBlsMC(
+      proofValue = await createSelectiveDisclosureProofBls(
         publicKey,
         nonce,
         decodedBbsSignature,

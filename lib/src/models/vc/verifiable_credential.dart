@@ -45,12 +45,12 @@ class VerifiableCredential {
   /// The date and time when the credential was issued, in ISO 8601 format.
   ///
   /// Represents the point in time when the credential became valid.
-  final String? issuanceDate;
+  final String? validFrom;
 
   /// The date and time when the credential expires, in ISO 8601 format.
   ///
   /// If specified, the credential is considered invalid after this date.
-  final String? expirationDate;
+  final String? validUntil;
 
   /// The subject of the credential containing claims about the entity being described.
   ///
@@ -78,8 +78,8 @@ class VerifiableCredential {
     this.id,
     this.type,
     this.issuer,
-    this.issuanceDate,
-    this.expirationDate,
+    this.validFrom,
+    this.validUntil,
     this.credentialSubject,
     this.proof,
   });

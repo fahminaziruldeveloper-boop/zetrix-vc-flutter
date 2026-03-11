@@ -1,0 +1,28 @@
+[package]
+name = "zetrix_vc_flutter"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "bulletproof"
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+# Bulletproofs for zero-knowledge range proofs
+bulletproofs = "4.0"
+curve25519-dalek-ng = { version = "4.1", features = ["serde"] }
+merlin = "3.0"
+rand = "0.8"
+
+# Flutter Rust Bridge for FFI
+flutter_rust_bridge = "=2.11.1"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+base64 = "0.22"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

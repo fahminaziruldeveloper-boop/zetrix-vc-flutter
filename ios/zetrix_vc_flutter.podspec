@@ -15,8 +15,8 @@ Pod::Spec.new do |spec|
     # Public headers that should be exposed to the plugin
     spec.public_header_files = 'Classes/**/*.h'
 
-    # Static libraries
-    spec.vendored_libraries = 'Frameworks/libbbs.a'
+    # Static libraries - BBS signatures and Bulletproof range proofs
+    spec.vendored_libraries = 'Frameworks/libbbs.a', 'Frameworks/libbulletproof.a'
 
     # Add the correct header search paths
     spec.pod_target_xcconfig = {

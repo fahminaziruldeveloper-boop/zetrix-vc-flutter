@@ -1,15 +1,17 @@
+import 'dart:convert';
+
+import 'package:bs58/bs58.dart';
+import 'package:convert/convert.dart';
 import 'package:cryptography/cryptography.dart' as crypto;
 import 'package:hex/hex.dart';
 import 'package:pinenacl/digests.dart';
-import 'package:bs58/bs58.dart';
-import 'package:convert/convert.dart';
 import 'package:pinenacl/ed25519.dart';
-import 'package:zetrix_vc_flutter/src/models/vc/verifiable_presentation.dart';
-import 'dart:convert';
 import 'package:zetrix_vc_flutter/src/models/account/create_account.dart';
-import 'package:zetrix_vc_flutter/src/models/transaction/sign_message.dart';
 import 'package:zetrix_vc_flutter/src/models/transaction/sign_blob.dart';
-import 'package:zetrix_vc_flutter/src/utils/tools.dart';
+import 'package:zetrix_vc_flutter/src/models/transaction/sign_message.dart';
+import 'package:zetrix_vc_flutter/src/models/vc/verifiable_presentation.dart';
+import 'package:zetrix_vc_flutter/src/utils/encoding_utils.dart';
+import 'package:zetrix_vc_flutter/src/utils/helpers.dart';
 
 /// A utility class designed for encryption-related operations,
 /// such as key pair generation, public/private key manipulation, and address generation.
@@ -343,8 +345,8 @@ class EncryptionUtils {
       throw Exception('require message or encPrivateKey');
     }
 
-    List<int> msgList = HEX.decode(msg);
-    Uint8List msgByte = Uint8List.fromList(msgList);
+    Uint8List msgByte =
+        EncodingUtils.hexStringToBytes(msg); 
 
     Uint8List privateKeyByte = parsePrivateKey(privateKey);
 
@@ -375,8 +377,7 @@ class EncryptionUtils {
       throw Exception('require message or encPrivateKey');
     }
 
-    List<int> msgList = msg.codeUnits;
-    Uint8List msgByte = Uint8List.fromList(msgList);
+    Uint8List msgByte = utf8.encode(msg);
 
     Uint8List privateKeyByte = parsePrivateKey(privateKey);
 
@@ -457,14 +458,13 @@ class EncryptionUtils {
   Future<bool> verifyEddsaSignature(String jws, String publicKeyHex) async {
     final parts = jws.split('.');
     if (parts.length != 3) throw FormatException("Invalid JWS");
+    final String msg = Helpers.formatJwsSignData(parts[0], parts[1]);
+    final String signature = parts[2];
 
-    final msgBytes = Uint8List.fromList(utf8.encode('${parts[0]}.${parts[1]}'));
+    List<int> signatureBytes = HEX.decode(Helpers.base64UrlDecodeString(signature));
+    List<int> messageByte = EncodingUtils.hexStringToBytes(EncodingUtils.utfToHex(msg));
 
-    final signatureBytes = base64Url.decode(formatDecode(parts[2]));
-
-    Tools.logDebug('Signature length: ${signatureBytes.length}');
-
-    return verify(signatureBytes, msgBytes, publicKeyHex);
+    return verify(signatureBytes, messageByte, publicKeyHex);
   }
 
   /// Decodes a Base64Url string to a Base64-compatible format.

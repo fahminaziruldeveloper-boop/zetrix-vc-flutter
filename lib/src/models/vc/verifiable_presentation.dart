@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:zetrix_vc_flutter/src/models/vc/proof.dart';
+import 'package:zetrix_vc_flutter/src/models/vc/range_proof.dart';
 import 'package:zetrix_vc_flutter/src/models/vc/verifiable_credential.dart';
 
 part 'verifiable_presentation.g.dart';
@@ -46,7 +47,14 @@ class VerifiablePresentation {
   ///
   /// The proof ensures the verifiability of the [context], [type], and the contained
   /// [verifiableCredential] using digital signatures.
-  final Proof? proof;
+  Proof? proof;
+
+  /// Optional bulletproof range proof for privacy-preserving attribute verification.
+  ///
+  /// When included, allows proving that certain credential attributes fall within
+  /// specified ranges without revealing the actual values. Useful for scenarios like
+  /// proving age > 18, income within a bracket, or academic scores above threshold.
+  RangeProof? rangeProof;
 
   /// Constructs a new instance of [VerifiablePresentation].
   ///
@@ -56,12 +64,14 @@ class VerifiablePresentation {
   /// - [holder]: The identifier or DID of the holder of the Verifiable Presentation.
   /// - [verifiableCredential]: A list of [VerifiableCredential] objects contained in the presentation.
   /// - [proof]: A cryptographic proof validating the authenticity of the presentation.
+  /// - [rangeProof]: Optional bulletproof range proof for privacy-preserving verification.
   VerifiablePresentation({
     this.context,
     this.type,
     this.holder,
     this.verifiableCredential,
     this.proof,
+    this.rangeProof,
   });
 
   /// Creates a [VerifiablePresentation] object from a JSON structure.

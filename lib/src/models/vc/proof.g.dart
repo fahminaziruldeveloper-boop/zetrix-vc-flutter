@@ -20,8 +20,8 @@ Map<String, dynamic> _$ProofToJson(Proof instance) => <String, dynamic>{
       'type': instance.type,
       'created': instance.created,
       'proofPurpose': instance.proofPurpose,
-      'proofValue': instance.proofValue,
+      if (instance.proofValue case final value?) 'proofValue': value,
       'verificationMethod': instance.verificationMethod,
-      'jws': instance.jws,
-      'nonce': instance.nonce,
+      if (instance.jws case final value?) 'jws': value,
+      if (instance.nonce case final value?) 'nonce': value,
     };

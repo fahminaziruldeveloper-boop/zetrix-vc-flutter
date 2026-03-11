@@ -1,0 +1,9 @@
+/// Test/example keys — DO NOT USE IN PRODUCTION.
+///
+/// Copy this file as `test_keys.dart` and fill in your own keys.
+library;
+
+const String issuerPublicKey = 'YOUR_ISSUER_PUBLIC_KEY_HERE';
+
+/// Replace with a valid holder private key for local testing.
+const String holderPrivateKey = 'YOUR_HOLDER_PRIVATE_KEY_HERE';

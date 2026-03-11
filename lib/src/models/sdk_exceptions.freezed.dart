@@ -574,6 +574,222 @@ class _$DefaultErrorCopyWithImpl<$Res> implements $DefaultErrorCopyWith<$Res> {
 
 /// @nodoc
 
+class CryptoError with DiagnosticableTreeMixin implements ZetrixSDKExceptions {
+  const CryptoError(this.error);
+
+  final String error;
+
+  /// Create a copy of ZetrixSDKExceptions
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $CryptoErrorCopyWith<CryptoError> get copyWith =>
+      _$CryptoErrorCopyWithImpl<CryptoError>(this, _$identity);
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(DiagnosticsProperty('type', 'ZetrixSDKExceptions.cryptoError'))
+      ..add(DiagnosticsProperty('error', error));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is CryptoError &&
+            (identical(other.error, error) || other.error == error));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, error);
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'ZetrixSDKExceptions.cryptoError(error: $error)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $CryptoErrorCopyWith<$Res>
+    implements $ZetrixSDKExceptionsCopyWith<$Res> {
+  factory $CryptoErrorCopyWith(
+          CryptoError value, $Res Function(CryptoError) _then) =
+      _$CryptoErrorCopyWithImpl;
+  @useResult
+  $Res call({String error});
+}
+
+/// @nodoc
+class _$CryptoErrorCopyWithImpl<$Res> implements $CryptoErrorCopyWith<$Res> {
+  _$CryptoErrorCopyWithImpl(this._self, this._then);
+
+  final CryptoError _self;
+  final $Res Function(CryptoError) _then;
+
+  /// Create a copy of ZetrixSDKExceptions
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? error = null,
+  }) {
+    return _then(CryptoError(
+      null == error
+          ? _self.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class VcSchemaError
+    with DiagnosticableTreeMixin
+    implements ZetrixSDKExceptions {
+  const VcSchemaError(this.error);
+
+  final String error;
+
+  /// Create a copy of ZetrixSDKExceptions
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $VcSchemaErrorCopyWith<VcSchemaError> get copyWith =>
+      _$VcSchemaErrorCopyWithImpl<VcSchemaError>(this, _$identity);
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(DiagnosticsProperty('type', 'ZetrixSDKExceptions.vcSchemaError'))
+      ..add(DiagnosticsProperty('error', error));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is VcSchemaError &&
+            (identical(other.error, error) || other.error == error));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, error);
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'ZetrixSDKExceptions.vcSchemaError(error: $error)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $VcSchemaErrorCopyWith<$Res>
+    implements $ZetrixSDKExceptionsCopyWith<$Res> {
+  factory $VcSchemaErrorCopyWith(
+          VcSchemaError value, $Res Function(VcSchemaError) _then) =
+      _$VcSchemaErrorCopyWithImpl;
+  @useResult
+  $Res call({String error});
+}
+
+/// @nodoc
+class _$VcSchemaErrorCopyWithImpl<$Res>
+    implements $VcSchemaErrorCopyWith<$Res> {
+  _$VcSchemaErrorCopyWithImpl(this._self, this._then);
+
+  final VcSchemaError _self;
+  final $Res Function(VcSchemaError) _then;
+
+  /// Create a copy of ZetrixSDKExceptions
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? error = null,
+  }) {
+    return _then(VcSchemaError(
+      null == error
+          ? _self.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class ResolverError
+    with DiagnosticableTreeMixin
+    implements ZetrixSDKExceptions {
+  const ResolverError(this.error);
+
+  final String error;
+
+  /// Create a copy of ZetrixSDKExceptions
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $ResolverErrorCopyWith<ResolverError> get copyWith =>
+      _$ResolverErrorCopyWithImpl<ResolverError>(this, _$identity);
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(DiagnosticsProperty('type', 'ZetrixSDKExceptions.ResolverError'))
+      ..add(DiagnosticsProperty('error', error));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is ResolverError &&
+            (identical(other.error, error) || other.error == error));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, error);
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'ZetrixSDKExceptions.ResolverError(error: $error)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $ResolverErrorCopyWith<$Res>
+    implements $ZetrixSDKExceptionsCopyWith<$Res> {
+  factory $ResolverErrorCopyWith(
+          ResolverError value, $Res Function(ResolverError) _then) =
+      _$ResolverErrorCopyWithImpl;
+  @useResult
+  $Res call({String error});
+}
+
+/// @nodoc
+class _$ResolverErrorCopyWithImpl<$Res>
+    implements $ResolverErrorCopyWith<$Res> {
+  _$ResolverErrorCopyWithImpl(this._self, this._then);
+
+  final ResolverError _self;
+  final $Res Function(ResolverError) _then;
+
+  /// Create a copy of ZetrixSDKExceptions
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? error = null,
+  }) {
+    return _then(ResolverError(
+      null == error
+          ? _self.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
 class UnexpectedError
     with DiagnosticableTreeMixin
     implements ZetrixSDKExceptions {

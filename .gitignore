@@ -98,6 +98,16 @@ Thumbs.db
 .buildlog/
 
 # -----------------------
+# Rust (flutter_rust_bridge)
+# -----------------------
+rust/target/
+rust/.cargo/
+rust/.rustup/
+
+# If you want to keep Cargo.lock, comment out the next line
+# rust/Cargo.lock
+
+# -----------------------
 # Keep These Files
 # -----------------------
 !pubspec.yaml
@@ -106,3 +116,20 @@ Thumbs.db
 !example/
 !assets/
 !native_libs/    # If you store compiled .so/.a/.dylib here
+
+# Windows generated files
+example/windows/
+
+# FFI generated bridge files (optional - regenerate with flutter_rust_bridge_codegen)
+# lib/frb_generated.dart
+# lib/frb_generated.io.dart
+# lib/frb_generated.web.dart
+# rust/src/frb_generated.rs
+
+# Rust release binaries (large files)
+rust/target/release/*.dll
+rust/target/release/*.so
+rust/target/release/*.dylib
+rust/target/release/*.a
+
+example/latest

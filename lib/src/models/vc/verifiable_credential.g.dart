@@ -15,8 +15,8 @@ VerifiableCredential _$VerifiableCredentialFromJson(
       id: json['id'] as String?,
       type: (json['type'] as List<dynamic>?)?.map((e) => e as String).toList(),
       issuer: json['issuer'] as String?,
-      issuanceDate: json['issuanceDate'] as String?,
-      expirationDate: json['expirationDate'] as String?,
+      validFrom: json['validFrom'] as String?,
+      validUntil: json['validUntil'] as String?,
       credentialSubject: json['credentialSubject'] as Map<String, dynamic>?,
       proof: (json['proof'] as List<dynamic>?)
           ?.map((e) => Proof.fromJson(e as Map<String, dynamic>))
@@ -30,8 +30,8 @@ Map<String, dynamic> _$VerifiableCredentialToJson(
       if (instance.id case final value?) 'id': value,
       if (instance.type case final value?) 'type': value,
       if (instance.issuer case final value?) 'issuer': value,
-      if (instance.issuanceDate case final value?) 'issuanceDate': value,
-      if (instance.expirationDate case final value?) 'expirationDate': value,
+      if (instance.validFrom case final value?) 'validFrom': value,
+      if (instance.validUntil case final value?) 'validUntil': value,
       if (instance.credentialSubject case final value?)
         'credentialSubject': value,
       if (instance.proof?.map((e) => e.toJson()).toList() case final value?)

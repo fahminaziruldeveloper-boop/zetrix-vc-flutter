@@ -65,6 +65,12 @@ abstract class ZetrixSDKExceptions with _$ZetrixSDKExceptions {
   /// Custom exception for generic or default errors, providing a custom error message.
   const factory ZetrixSDKExceptions.defaultError(String error) = DefaultError;
 
+  const factory ZetrixSDKExceptions.cryptoError(String error) = CryptoError;
+
+  const factory ZetrixSDKExceptions.vcSchemaError(String error) = VcSchemaError;
+
+  const factory ZetrixSDKExceptions.ResolverError(String error) = ResolverError;
+ 
   /// Exception for unexpected errors or behavior.
   const factory ZetrixSDKExceptions.unexpectedError() = UnexpectedError;
 
@@ -196,6 +202,12 @@ abstract class ZetrixSDKExceptions with _$ZetrixSDKExceptions {
     } else if (sdkExceptions is UnableToProcess) {
       return "Unable to process the data";
     } else if (sdkExceptions is DefaultError) {
+      return sdkExceptions.error;
+    } else if (sdkExceptions is CryptoError) {
+      return sdkExceptions.error;
+    } else if (sdkExceptions is VcSchemaError) {
+      return sdkExceptions.error;
+    } else if (sdkExceptions is ResolverError) {
       return sdkExceptions.error;
     } else if (sdkExceptions is FormatException) {
       return "Unexpected error occurred";

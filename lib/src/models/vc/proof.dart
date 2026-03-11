@@ -9,9 +9,12 @@ class Proof {
   String? type;
   String? created;
   String? proofPurpose;
+  @JsonKey(includeIfNull: false)
   String? proofValue;
   String? verificationMethod;
+  @JsonKey(includeIfNull: false)
   String? jws;
+  @JsonKey(includeIfNull: false)
   String? nonce;
 
   Proof(
