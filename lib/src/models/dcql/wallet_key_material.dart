@@ -32,7 +32,7 @@ class WalletKeyMaterial {
   ///
   /// The exact format depends on the BBS+ library used (see Open Question #5).
   /// Typically matches what the `bbs` Rust crate expects as a 32-byte scalar.
-  final Uint8List bbsPrivateKey;
+  final Uint8List? bbsPrivateKey;
 
   /// Base58-encoded BBS+ public key.
   ///
@@ -43,7 +43,7 @@ class WalletKeyMaterial {
     required this.holderDid,
     required this.ed25519PrivateKey,
     required this.ed25519PublicKey,
-    required this.bbsPrivateKey,
+    this.bbsPrivateKey,
     required this.bbsPublicKey,
   });
 }

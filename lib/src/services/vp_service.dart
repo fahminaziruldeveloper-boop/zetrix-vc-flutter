@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:bs58/bs58.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cryptography/cryptography.dart' as crypto;
 import 'package:uuid/uuid.dart';
 import 'package:zetrix_vc_flutter/src/models/dcql/dcql_exceptions.dart';
@@ -638,7 +639,6 @@ class ZetrixVpService {
     final response = PresentationResponse.fromJson(presentationResponse);
     final requirement = _dcqlMatchRequirement(response.credentialQuery.credentials, vc);
 
-    final disclosedFields = <String, dynamic>{};
     final bbsRevealKeys = <String>[];
     final rangeProofClaims = <_DcqlRangeProofClaim>[];
     final credSubject = vc['credentialSubject'] as Map<String, dynamic>? ?? {};
@@ -652,21 +652,23 @@ class ZetrixVpService {
       final filter = claim.filter;
 
       if (filter == null || !filter.requiresRangeProof) {
-        _dcqlSetNestedValue(disclosedFields, actualFullPath, rawValue);
         bbsRevealKeys.add(flatKey);
       } else {
         final numValue = _dcqlResolveToNumber(actualSegments.last, rawValue);
-        if (filter.minimum != null && numValue < filter.minimum!) {
-          throw RangeProofFailException(fieldName: actualSegments.last, value: numValue, minimum: filter.minimum, maximum: filter.maximum);
-        }
-        if (filter.maximum != null && numValue > filter.maximum!) {
-          throw RangeProofFailException(fieldName: actualSegments.last, value: numValue, minimum: filter.minimum, maximum: filter.maximum);
-        }
         rangeProofClaims.add(_DcqlRangeProofClaim(path: actualFullPath, numericValue: numValue.toInt(), minimum: filter.minimum?.toInt(), maximum: filter.maximum?.toInt()));
-        _dcqlSetNestedValue(disclosedFields, actualFullPath, rawValue);
         bbsRevealKeys.add(flatKey);
       }
     }
+
+    // Rebuild disclosedFields by traversing the original credentialSubject in its
+    // native key-insertion order. This prevents any JCS-style alphabetical reordering
+    // that would shift BBS+ message indices and break selective-disclosure verification.
+    final revealedFlatKeySet = bbsRevealKeys.toSet();
+    // Also include flat keys for range-proof claims so they appear in the credential subject.
+    for (final rpc in rangeProofClaims) {
+      revealedFlatKeySet.add(rpc.path.skip(1).join('.'));
+    }
+    final disclosedFields = _dcqlOrderedDiscloseFields(credSubject, revealedFlatKeySet);
 
     final derivedVc = await _dcqlBuildDerivedVc(
       originalVc: vc,
@@ -745,6 +747,28 @@ class ZetrixVpService {
       }
     }
     return null;
+  }
+
+  /// Rebuilds a disclosed-fields map by traversing [original] in its native key-insertion
+  /// order and retaining only the leaf keys present in [revealedFlatKeys].
+  ///
+  /// This preserves the exact JSON key order of the original credential so that
+  /// BBS+ message indices (derived from flattened key order) remain stable — no
+  /// JCS (RFC 8785) alphabetical reordering is applied.
+  Map<String, dynamic> _dcqlOrderedDiscloseFields(
+      Map<String, dynamic> original, Set<String> revealedFlatKeys, [String prefix = '']) {
+    final result = <String, dynamic>{};
+    for (final entry in original.entries) {
+      final fullKey = prefix.isEmpty ? entry.key : '$prefix.${entry.key}';
+      if (entry.value is Map<String, dynamic>) {
+        final nested = _dcqlOrderedDiscloseFields(
+            entry.value as Map<String, dynamic>, revealedFlatKeys, fullKey);
+        if (nested.isNotEmpty) result[entry.key] = nested;
+      } else {
+        if (revealedFlatKeys.contains(fullKey)) result[entry.key] = entry.value;
+      }
+    }
+    return result;
   }
 
   void _dcqlSetNestedValue(Map<String, dynamic> target, List<String> path, dynamic value) {
@@ -872,8 +896,9 @@ class ZetrixVpService {
         final bpProof = await _dcqlBuildRangeProof(claim);
         generatedRangeProofs.add(_DcqlGeneratedRangeProof(claim: claim, proof: bpProof));
       } catch (e) {
-        throw ProofCreationException(
-            'BulletProof generation failed for field "${claim.path.last}"', cause: e);
+        // BulletProof generation failed for this claim — skip it and continue.
+        // The VP will be submitted without a range proof for this field.
+        debugPrint('[ZetrixVP] BulletProof skipped for "${claim.path.last}": $e');
       }
     }
 

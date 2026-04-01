@@ -14,20 +14,21 @@ final _log = Logger(printer: PrettyPrinter());
 
 const _samplePresentationRequest = '''{
   "object": {
+    "presentation_id": "pres_1774931540737_83d48d60",
     "credential_query": {
       "credentials": [
         {
-          "id": "did:zid:ba4f1fcf68831a5c00000000",
+          "id": "did:zid:f1d675934d353394fa90d6132a3f8393b670a326632d936d1174df7307fadba4",
           "format": "ldp_vc",
           "meta": {
-            "vct_values": ["VerifiableCredential", "Driving License"]
+            "vct_values": ["VerifiableCredential", "MyKAD"]
           },
           "claims": [
             {
-              "path": ["credentialSubject", "drivingLicense", "name"]
+              "path": ["credentialSubject", "mykad", "name"]
             },
             {
-              "path": ["credentialSubject", "drivingLicense", "age"],
+              "path": ["credentialSubject", "mykad", "icNo"],
               "filter": {
                 "type": "number",
                 "minimum": 18
@@ -37,39 +38,40 @@ const _samplePresentationRequest = '''{
         }
       ]
     },
-    "nonce": "15e49bc18f0eaec5abe3fa6381cff76b",
-    "response_uri": "http://localhost:8080/v1/presentation/submit",
+    "nonce": "965d5504e5eee02a80400d9259fc9fd1",
+    "response_uri": "https://zid-oid4vp-sandbox.zetrix.com/api/v1/presentation/submit",
     "response_mode": "direct_post",
-    "state": "user_session_123"
+    "state": "user_session_240"
   }
 }''';
 
 const _sampleVc = '''{
-  "id": "did:zid:59dc40120fe679a85a1d5aa671f730ac3806f05ccf4f0f539c727e130a2af01c",
-  "type": ["VerifiableCredential", "Driving License"],
-  "issuer": "did:zid:9bee765674de000de736cd73e2353890df1fdb6ac0df9ecc3a5a78a4afee03a9",
-  "validFrom": "2025-12-01T00:00:00Z",
-  "validUntil": "2026-12-02T00:00:00Z",
+  "id": "did:zid:097b31ed9e68dbcf421411cdc463bc5632b1c8cd1b6c60ebc8900b238d9c5185",
+  "type": ["VerifiableCredential", "MyKAD"],
+  "issuer": "did:zid:ba12fe05ec68d88a0f8d36dfd4ef09f94e9c79f05590b647cba38463ae9e3e6d",
+  "validFrom": "2026-03-25T00:00:00Z",
+  "validUntil": "2026-09-18T00:00:00Z",
   "credentialSubject": {
-    "id": "did:zid:9bee765674de000de736cd73e2353890df1fdb6ac0df9ecc3a5a78a4afee03a9",
-    "drivingLicense": {
-      "age": "21",
-      "class": "B2",
-      "name": "Ali bin Abu"
+    "id": "did:zid:92a1795706f167b4cdbee462da6aee7668c9f502649d61e0de972ad5b9c4555f",
+    "mykad": {
+      "name": "MOHAMAD SHAH AMIR ASWAD BIN EHWAN",
+      "icNo": "951222015747",
+      "expiry": "18/09/2026"
     }
   },
   "proof": [
     {
       "type": "BbsBlsSignature2020",
-      "created": "2026-02-20T07:44:02.433275217Z",
+      "created": "2026-03-25T04:35:03.655886233Z",
       "proofPurpose": "assertionMethod",
-      "proofValue": "usbyXgt5SiNN0RLduPZELH9rmP5GusuEOVuvYstZP_O19tciY0gLsWmDBP9gs-_3AaPJb78_aLxxNDcDjKXrmFwGQg8mYgBAu904MtqXP_mkdk3n0cxLW6k1GszE3wKSmzb2MMNiblKWknUkYvbySaA",
-      "verificationMethod": "did:zid:9bee765674de000de736cd73e2353890df1fdb6ac0df9ecc3a5a78a4afee03a9#delegateKey-1"
+      "proofValue": "uquhGeTlnU0brMxR_yIyUn7oqsgTeoBFHJcr4Ig9p7wUCrxiNiKlsRMZbRF1SAScMJ8zMK8uv2nbm-JtF6mADplsgcP_gKQLv8nY5GY_41ntqd_nGkUsBk4w5i52drvTjcaFPPrfOnVxauFYp9xwCIg",
+      "verificationMethod": "did:zid:ba12fe05ec68d88a0f8d36dfd4ef09f94e9c79f05590b647cba38463ae9e3e6d#delegateKey-6"
     }
   ],
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://w3id.org/security/bbs/v1"
+    "https://w3id.org/security/bbs/v1",
+    "https://test-node.zetrix.com/getAccountMetaData?address=ZTX3JszqPgRUx743SAp7q7zURfjvkWuH2FMEz&key=template__did:zid:f1d675934d353394fa90d6132a3f8393b670a326632d936d1174df7307fadba4"
   ]
 }''';
 
@@ -102,11 +104,11 @@ class _DcqlVpScreenState extends State<DcqlVpScreen>
   // ── Tab 3: Keys ───────────────────────────────────────────────────────────
   // Replace these with real holder key values when testing end-to-end.
   final _holderDidCtrl = TextEditingController(
-      text: 'did:zid:9bee765674de000de736cd73e2353890df1fdb6ac0df9ecc3a5a78a4afee03a9');
+      text: 'did:zid:92a1795706f167b4cdbee462da6aee7668c9f502649d61e0de972ad5b9c4555f');
   final _ed25519PubCtrl = TextEditingController(
-      text: 'CxSNscV5tJDhqAPoGaWz4ZVwaGxKyQPbbp4fwH67iDSH');
+      text: ''); // holder ed25519 public key hex
   final _ed25519PrivCtrl = TextEditingController(
-      text: 'privBxpL2meqP4CHanp4KRzRrabwCEnTgJx8DAddWkveUoZWiYmuHFZx');
+      text: ''); // holder ed25519 private key (privB… Zetrix format)
   final _bbsPubCtrl = TextEditingController(
       text: 'zuKRSsZjMAYe1TgsnV5yUb9T3bbCqDEqQnCoaUkEXNomACZtZfxv1N4GVcRJmeiLpCwHaifjRjqqHewDcZcn9gW9nWvEiLb1cdgkYUxQfEoremhgeg8dfgkRvDifP6ypMp6U');
   final _bbsPrivCtrl = TextEditingController(
@@ -154,7 +156,6 @@ class _DcqlVpScreenState extends State<DcqlVpScreen>
 
     // Decode keys.
     Uint8List ed25519Priv;
-    Uint8List bbsPriv;
     try {
       // Accept the private key with or without the 'priv' prefix.
       final privStr = _ed25519PrivCtrl.text.trim();
@@ -165,6 +166,7 @@ class _DcqlVpScreenState extends State<DcqlVpScreen>
       return;
     }
 
+    Uint8List? bbsPriv;
     final bbsPrivRaw = _bbsPrivCtrl.text.trim();
     if (bbsPrivRaw.isNotEmpty) {
       try {
@@ -179,10 +181,8 @@ class _DcqlVpScreenState extends State<DcqlVpScreen>
         _showError('BBS private key is not valid hex.\n$e');
         return;
       }
-    } else {
-      // Not required for BBS+ derivation — pass empty bytes as placeholder.
-      bbsPriv = Uint8List(0);
     }
+    // bbsPriv remains null when blank — field is optional in WalletKeyMaterial.
 
     final keys = WalletKeyMaterial(
       holderDid: _holderDidCtrl.text.trim(),

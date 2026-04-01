@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:example/json_screen.dart';
 import 'package:example/src/services/vc_service.dart';
 import 'package:example/src/services/vp_service.dart';
@@ -17,7 +18,12 @@ var logger = Logger(printer: PrettyPrinter());
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ZetrixVcFlutter().init(); // Initialize the Zetrix VC SDK
+  try {
+    await ZetrixVcFlutter().init(); // Initialize the Zetrix VC SDK
+  } catch (e, st) {
+    // Log but don't crash — app still opens and shows UI
+    logger.e('⚠️ SDK init failed: $e', stackTrace: st);
+  }
   runApp(const MyApp());
 }
 
@@ -318,13 +324,13 @@ class _ZetrixSdkTestWidgetState extends State<ZetrixSdkTestWidget> with WidgetsB
   // ── DCQL VP Real Demo (user-supplied keys + VC) ──────────────────────────
 
   Future<void> _runDcqlVpDemoReal() async {
-    final requestCtrl = TextEditingController();
-    final holderDidCtrl = TextEditingController();
-    final ed25519PrivCtrl = TextEditingController();
-    final ed25519PubCtrl = TextEditingController();
-    final bbsPrivCtrl = TextEditingController();
-    final bbsPubCtrl = TextEditingController();
-    final vcCtrl = TextEditingController();
+    final requestCtrl = TextEditingController(text: _cachedDcqlRequest);
+    final holderDidCtrl = TextEditingController(text: _cachedHolderDid);
+    final ed25519PrivCtrl = TextEditingController(text: _cachedEd25519Priv);
+    final ed25519PubCtrl = TextEditingController(text: _cachedEd25519Pub);
+    final bbsPrivCtrl = TextEditingController(text: _cachedBbsPriv);
+    final bbsPubCtrl = TextEditingController(text: _cachedBbsPub);
+    final vcCtrl = TextEditingController(text: _cachedVc);
 
     // Local helper to build a labelled text field
     Widget buildField({
@@ -364,7 +370,8 @@ class _ZetrixSdkTestWidgetState extends State<ZetrixSdkTestWidget> with WidgetsB
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
         title: const Text('DCQL VP — Real Demo'),
         content: SizedBox(
           width: double.maxFinite,
@@ -427,6 +434,18 @@ class _ZetrixSdkTestWidgetState extends State<ZetrixSdkTestWidget> with WidgetsB
         ),
         actions: [
           TextButton(
+            onPressed: () {
+              requestCtrl.clear();
+              holderDidCtrl.clear();
+              ed25519PrivCtrl.clear();
+              ed25519PubCtrl.clear();
+              bbsPrivCtrl.clear();
+              bbsPubCtrl.clear();
+              vcCtrl.clear();
+            },
+            child: const Text('Clear All'),
+          ),
+          TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: const Text('Cancel'),
           ),
@@ -435,12 +454,22 @@ class _ZetrixSdkTestWidgetState extends State<ZetrixSdkTestWidget> with WidgetsB
             child: const Text('Generate VP'),
           ),
         ],
+        ),
       ),
     );
 
     if (confirmed != true || !mounted) return;
 
-    setState(() => _result = '⏳ Generating DCQL VP…');
+    setState(() {
+      _result = '⏳ Generating DCQL VP…';
+      _cachedDcqlRequest = requestCtrl.text.trim();
+      _cachedHolderDid = holderDidCtrl.text.trim();
+      _cachedEd25519Priv = ed25519PrivCtrl.text.trim();
+      _cachedEd25519Pub = ed25519PubCtrl.text.trim();
+      _cachedBbsPriv = bbsPrivCtrl.text.trim();
+      _cachedBbsPub = bbsPubCtrl.text.trim();
+      _cachedVc = vcCtrl.text.trim();
+    });
 
     // ── Decode Ed25519 private key (Zetrix privB… format) ───────────────────
     Uint8List ed25519Seed;
@@ -457,12 +486,10 @@ class _ZetrixSdkTestWidgetState extends State<ZetrixSdkTestWidget> with WidgetsB
       return;
     }
 
-    // ── Decode BBS private key (optional, zeros if blank) ───────────────────
-    Uint8List bbsSeed;
+    // ── Decode BBS private key (optional) ────────────────────────────────
+    Uint8List? bbsSeed;
     final bbsPrivRaw = bbsPrivCtrl.text.trim();
-    if (bbsPrivRaw.isEmpty) {
-      bbsSeed = Uint8List(32);
-    } else {
+    if (bbsPrivRaw.isNotEmpty) {
       try {
         final stripped = bbsPrivRaw.startsWith('priv')
             ? bbsPrivRaw.substring(4)
@@ -472,10 +499,11 @@ class _ZetrixSdkTestWidgetState extends State<ZetrixSdkTestWidget> with WidgetsB
       } catch (e) {
         setState(() => _result = '❌ Invalid bbsPrivateKey');
         _showDcqlErrorDialog('Invalid Key',
-            'Could not decode bbsPrivateKey.\nLeave blank to use zeros.\n\nError: $e');
+            'Could not decode bbsPrivateKey.\nLeave blank to skip.\n\nError: $e');
         return;
       }
     }
+    // bbsSeed remains null when blank — field is optional in WalletKeyMaterial.
 
     final keys = WalletKeyMaterial(
       holderDid: holderDidCtrl.text.trim(),
@@ -1024,9 +1052,19 @@ class _ZetrixSdkTestWidgetState extends State<ZetrixSdkTestWidget> with WidgetsB
     }
   }
   String _result = 'Tap the button to start.';
+
+  // ── DCQL VP input cache (restores previous values when dialog re-opens) ──
+  String _cachedDcqlRequest = '';
+  String _cachedHolderDid = '';
+  String _cachedEd25519Priv = '';
+  String _cachedEd25519Pub = '';
+  String _cachedBbsPriv = '';
+  String _cachedBbsPub = '';
+  String _cachedVc = '';
+
   ZetrixVpService zetrixVpService = ZetrixVpService();
-  final _dio = ZetrixVcFlutter().dio;
-  final network = ZetrixVcFlutter().isMainnet;
+  late final Dio _dio;
+  late final bool network;
   late final VcService vcService;
   late final VpService vpService;
 
@@ -1034,6 +1072,13 @@ class _ZetrixSdkTestWidgetState extends State<ZetrixSdkTestWidget> with WidgetsB
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    try {
+      _dio = ZetrixVcFlutter().dio;
+      network = ZetrixVcFlutter().isMainnet;
+    } catch (_) {
+      _dio = Dio();
+      network = false;
+    }
     vcService = VcService(_dio, network);
     vpService = VpService(_dio, network);
     zetrixVpService = ZetrixVpService(dio: _dio, isMainnet: network);

@@ -1,5 +1,7 @@
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart' show Int64List;
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:zetrix_vc_flutter/api.dart' as rust;
+import 'package:zetrix_vc_flutter/frb_generated.dart';
 import 'package:zetrix_vc_flutter/src/models/bulletproof/bulletproof_proof.dart';
 
 /// Service for generating and verifying Bulletproof range proofs
@@ -114,10 +116,7 @@ class BulletproofService {
     int bitSize = defaultBitSize,
     String domain = defaultDomain,
   }) async {
-    if (values.length != mins.length) {
-      throw ArgumentError('Values and mins must have the same length');
-    }
-
+   
     final result = await rust.generateMultipleMinRangeProof(
       values: Int64List.fromList(values),
       mins: Int64List.fromList(mins),
@@ -144,9 +143,6 @@ class BulletproofService {
     int bitSize = defaultBitSize,
     String domain = defaultDomain,
   }) async {
-    if (values.length != maxs.length) {
-      throw ArgumentError('Values and maxs must have the same length');
-    }
 
     final result = await rust.generateMultipleMaxRangeProof(
       values: Int64List.fromList(values),
@@ -175,10 +171,7 @@ class BulletproofService {
     required List<int> maxs,
     int bitSize = defaultBitSize,
     String domain = defaultDomain,
-  }) async {
-    if (values.length != mins.length || values.length != maxs.length) {
-      throw ArgumentError('Values, mins, and maxs must have the same length');
-    }
+  }) async {  
 
     final result = await rust.generateMultipleMinMaxRangeProof(
       values: Int64List.fromList(values),
